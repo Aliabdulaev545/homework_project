@@ -220,3 +220,10 @@ __marimo__/
 .streamlit/secrets.toml
 
 .idea/
+
+# Игнорируем отчёты
+report_*.json
+reports/
+
+# НЕ игнорируем user_settings.json
+!user_settings.json
