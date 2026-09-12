@@ -1,6 +1,6 @@
 import pytest
-import json
-from src.services import simple_search, search_by_phone, search_transfers_to_individuals
+
+from src.services import search_by_phone, search_transfers_to_individuals, simple_search
 
 
 def test_simple_search():

@@ -1,11 +1,12 @@
 # src/reports.py
 
-import pandas as pd
-import logging
-from typing import Optional, Dict, Any
-from datetime import datetime, timedelta
 import json
+import logging
+from datetime import datetime, timedelta
 from functools import wraps
+from typing import Optional
+
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -121,6 +122,7 @@ def spending_by_weekday(transactions: pd.DataFrame, date: Optional[str] = None) 
 
 # Дополнительные функции для отчетов
 
+
 @report_decorator()
 def spending_by_category(transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
     """
@@ -141,9 +143,8 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
 
             if "Категория" in filtered_trans.columns and "Сумма платежа" in filtered_trans.columns:
                 category_expenses = filtered_trans[
-                    (filtered_trans["Категория"] == category) &
-                    (filtered_trans["Сумма платежа"] < 0)
-                    ]
+                    (filtered_trans["Категория"] == category) & (filtered_trans["Сумма платежа"] < 0)
+                ]
 
                 if not category_expenses.empty:
                     result = category_expenses[["Дата операции", "Сумма платежа", "Описание"]].copy()
@@ -185,9 +186,7 @@ def spending_by_workday(transactions: pd.DataFrame, date: Optional[str] = None) 
                 if not expenses.empty:
                     # Определяем рабочие дни (пн-пт) и выходные (сб-вс)
                     expenses["День недели"] = expenses["Дата операции"].dt.weekday
-                    expenses["Тип дня"] = expenses["День недели"].apply(
-                        lambda x: "Рабочий" if x < 5 else "Выходной"
-                    )
+                    expenses["Тип дня"] = expenses["День недели"].apply(lambda x: "Рабочий" if x < 5 else "Выходной")
 
                     # Считаем средние траты
                     result = expenses.groupby("Тип дня")["Сумма платежа"].mean().abs().reset_index()

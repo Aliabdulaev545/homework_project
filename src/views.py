@@ -3,7 +3,7 @@
 import json
 import logging
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 import pandas as pd
 
@@ -41,11 +41,7 @@ def get_card_info(transactions: pd.DataFrame) -> List[Dict[str, Any]]:
         last_digits = str(card)[-4:] if card else "0000"
         total_spent = abs(group[group["Сумма платежа"] < 0]["Сумма платежа"].sum())
         cashback = round(total_spent / 100, 2)
-        cards.append({
-            "last_digits": last_digits,
-            "total_spent": round(total_spent, 2),
-            "cashback": cashback
-        })
+        cards.append({"last_digits": last_digits, "total_spent": round(total_spent, 2), "cashback": cashback})
     return cards
 
 
@@ -54,13 +50,23 @@ def get_top_transactions(transactions: pd.DataFrame, limit: int = 5) -> List[Dic
     sorted_trans = transactions.sort_values("Сумма платежа", ascending=False)
     top = []
     for _, row in sorted_trans.head(limit).iterrows():
-        top.append({
-            "date": str(row["Дата операции"]),
-            "amount": round(row["Сумма платежа"], 2),
-            "category": row.get("Категория", "Без категории"),
-            "description": row.get("Описание", "Нет описания")
-        })
+        top.append(
+            {
+                "date": str(row["Дата операции"]),
+                "amount": round(row["Сумма платежа"], 2),
+                "category": row.get("Категория", "Без категории"),
+                "description": row.get("Описание", "Нет описания"),
+            }
+        )
     return top
+
+
+def get_stock_prices(param):
+    pass
+
+
+def get_currency_rates(param):
+    pass
 
 
 def main_page(date_str: str) -> Dict[str, Any]:
@@ -77,7 +83,7 @@ def main_page(date_str: str) -> Dict[str, Any]:
             "cards": [],
             "top_transactions": [],
             "currency_rates": [],
-            "stock_prices": []
+            "stock_prices": [],
         }
 
     try:
@@ -90,7 +96,7 @@ def main_page(date_str: str) -> Dict[str, Any]:
             "cards": [],
             "top_transactions": [],
             "currency_rates": [],
-            "stock_prices": []
+            "stock_prices": [],
         }
     except Exception as e:
         logger.error(f"Ошибка при чтении Excel: {e}")
@@ -100,15 +106,13 @@ def main_page(date_str: str) -> Dict[str, Any]:
             "cards": [],
             "top_transactions": [],
             "currency_rates": [],
-            "stock_prices": []
+            "stock_prices": [],
         }
-
-    settings = load_user_settings()
 
     return {
         "greeting": get_greeting(),
         "cards": get_card_info(df),
         "top_transactions": get_top_transactions(df, 5),
         "currency_rates": [],
-        "stock_prices": []
+        "stock_prices": [],
     }

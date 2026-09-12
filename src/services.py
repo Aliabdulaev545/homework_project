@@ -1,17 +1,18 @@
 # src/services.py
 
-import re
 import json
-import pandas as pd
 import logging
-from typing import List, Dict, Any
+import re
+from typing import Any, Dict, Hashable, List
+
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 # ====== Простой поиск ======
-def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def simple_search(search_query: str, transactions: List[Dict[Hashable, Any]]) -> List[Dict[Hashable, Any]]:
     """
     Простой поиск транзакций по подстроке.
     """
@@ -32,7 +33,9 @@ def simple_search(search_query: str, transactions: List[Dict[str, Any]]) -> List
     return results
 
 
-def simple_search_from_excel(search_query: str, excel_path: str = "data/operations.xlsx") -> List[Dict[str, Any]]:
+def simple_search_from_excel(
+    search_query: str, excel_path: str = "data/operations.xlsx"
+) -> list[dict[Hashable, Any]] | list[Any]:
     """Поиск транзакций в Excel-файле"""
     try:
         df = pd.read_excel(excel_path)
@@ -47,7 +50,7 @@ def simple_search_from_excel(search_query: str, excel_path: str = "data/operatio
 
 
 # ====== Поиск по телефону ======
-def search_by_phone(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def search_by_phone(transactions: List[Dict[Hashable, Any]]) -> List[Dict[Hashable, Any]]:
     """
     Поиск транзакций, содержащих мобильные номера в описании.
     """
@@ -63,7 +66,7 @@ def search_by_phone(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         [\s\-]?                         # Разделитель
         \d{2}                           # 2 цифры
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     results = []
@@ -81,7 +84,7 @@ def search_by_phone_from_excel(excel_path: str = "data/operations.xlsx") -> List
     try:
         df = pd.read_excel(excel_path)
         transactions = df.to_dict("records")
-        return search_by_phone(transactions)
+        return search_by_phone(transactions)  # type: ignore
     except FileNotFoundError:
         logger.error(f"Файл {excel_path} не найден")
         return []
@@ -91,7 +94,7 @@ def search_by_phone_from_excel(excel_path: str = "data/operations.xlsx") -> List
 
 
 # ====== Поиск переводов физлицам ======
-def search_transfers_to_individuals(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def search_transfers_to_individuals(transactions: List[Dict[Hashable, Any]]) -> List[Dict[Hashable, Any]]:
     """
     Поиск транзакций, которые относятся к переводам физлицам.
     Категория = "Переводы", в описании есть имя и первая буква фамилии.
@@ -103,7 +106,7 @@ def search_transfers_to_individuals(transactions: List[Dict[str, Any]]) -> List[
         description = str(trans.get("Описание", ""))
 
         if category == "Переводы":
-            name_pattern = re.compile(r'[А-Я][а-я]+\s+[А-Я]\.')
+            name_pattern = re.compile(r"[А-Я][а-я]+\s+[А-Я]\.")
             if name_pattern.search(description):
                 results.append(trans)
 

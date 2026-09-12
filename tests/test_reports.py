@@ -1,7 +1,9 @@
-import pytest
-import pandas as pd
 from datetime import datetime, timedelta
-from src.reports import spending_by_weekday, spending_by_category, spending_by_workday, report_decorator
+
+import pandas as pd
+import pytest
+
+from src.reports import report_decorator, spending_by_category, spending_by_weekday, spending_by_workday
 
 
 def test_spending_by_weekday():
@@ -11,12 +13,14 @@ def test_spending_by_weekday():
     for i in range(7):
         dates.append((datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d"))
 
-    test_data = pd.DataFrame({
-        "Дата операции": dates,
-        "Сумма платежа": [-100.0, -200.0, -300.0, -400.0, -500.0, -600.0, -700.0],
-        "Категория": ["Еда"] * 7,
-        "Описание": ["Магазин"] * 7
-    })
+    test_data = pd.DataFrame(
+        {
+            "Дата операции": dates,
+            "Сумма платежа": [-100.0, -200.0, -300.0, -400.0, -500.0, -600.0, -700.0],
+            "Категория": ["Еда"] * 7,
+            "Описание": ["Магазин"] * 7,
+        }
+    )
 
     result = spending_by_weekday(test_data)
 
@@ -29,12 +33,7 @@ def test_spending_by_weekday():
 
 def test_spending_by_weekday_empty():
     """Тест: траты по дням недели с пустыми данными"""
-    test_data = pd.DataFrame({
-        "Дата операции": [],
-        "Сумма платежа": [],
-        "Категория": [],
-        "Описание": []
-    })
+    test_data = pd.DataFrame({"Дата операции": [], "Сумма платежа": [], "Категория": [], "Описание": []})
 
     result = spending_by_weekday(test_data)
     assert isinstance(result, pd.DataFrame)
@@ -43,12 +42,14 @@ def test_spending_by_weekday_empty():
 
 def test_spending_by_category():
     """Тест: траты по категории"""
-    test_data = pd.DataFrame({
-        "Дата операции": [datetime.now().strftime("%Y-%m-%d")] * 3,
-        "Сумма платежа": [-100.0, -200.0, -50.0],
-        "Категория": ["Супермаркеты", "Супермаркеты", "Транспорт"],
-        "Описание": ["Магазин", "Магазин", "Такси"]
-    })
+    test_data = pd.DataFrame(
+        {
+            "Дата операции": [datetime.now().strftime("%Y-%m-%d")] * 3,
+            "Сумма платежа": [-100.0, -200.0, -50.0],
+            "Категория": ["Супермаркеты", "Супермаркеты", "Транспорт"],
+            "Описание": ["Магазин", "Магазин", "Такси"],
+        }
+    )
 
     result = spending_by_category(test_data, "Супермаркеты")
     assert isinstance(result, pd.DataFrame)
@@ -58,12 +59,14 @@ def test_spending_by_category():
 
 def test_spending_by_workday():
     """Тест: траты в рабочие/выходные дни"""
-    test_data = pd.DataFrame({
-        "Дата операции": [datetime.now().strftime("%Y-%m-%d")] * 5,
-        "Сумма платежа": [-100.0, -200.0, -300.0, -400.0, -500.0],
-        "Категория": ["Еда"] * 5,
-        "Описание": ["Магазин"] * 5
-    })
+    test_data = pd.DataFrame(
+        {
+            "Дата операции": [datetime.now().strftime("%Y-%m-%d")] * 5,
+            "Сумма платежа": [-100.0, -200.0, -300.0, -400.0, -500.0],
+            "Категория": ["Еда"] * 5,
+            "Описание": ["Магазин"] * 5,
+        }
+    )
 
     result = spending_by_workday(test_data)
 
@@ -86,6 +89,7 @@ def test_report_decorator():
 
     # Проверяем, что файл создался
     import os
+
     assert os.path.exists("test_report.json")
 
     # Удаляем тестовый файл
